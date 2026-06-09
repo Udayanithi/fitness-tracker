@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GetFitlyLab — Find Your Strength</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0a0a;
+  --card:#111111;
+  --card2:#1a1a1a;
+  --border:#2a2a2a;
+  --accent:#c8f135;
+  --accent2:#7c3aed;
+  --accent3:#f59e0b;
+  --text:#f0f0f0;
+  --muted:#888;
+  --danger:#ef4444;
+  --info:#3b82f6;
+  --radius:12px;
+  --shadow:0 20px 60px rgba(0,0,0,.7);
+  --font-display:'Bebas Neue',sans-serif;
+  --font-body:'Inter',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:#333;border-radius:2px}
+
+/* ── PAGE SYSTEM ── */
+.page{display:none!important;min-height:100vh}
+.page.active{display:block!important}
+#dashPage.active{display:flex!important;flex-direction:column}
+#landingPage.active{display:block!important}
+
+/* ══════════════════════════════════════
+   LANDING PAGE
+══════════════════════════════════════ */
+#landingPage { background: var(--bg); }
+
+/* NAV */
+.land-nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 60px;height:72px;
+  transition:background .3s,backdrop-filter .3s;
+}
+.land-nav.scrolled{
+  background:rgba(10,10,10,.92);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+.land-nav-logo{
+  font-family:var(--font-display);
+  font-size:2rem;letter-spacing:2px;color:#fff;
+  text-decoration:none;
+}
+.land-nav-logo span{color:var(--accent)}
+.land-nav-links{display:flex;align-items:center;gap:36px}
+.land-nav-links a{
+  color:rgba(255,255,255,.7);font-size:.85rem;font-weight:500;
+  letter-spacing:.5px;text-transform:uppercase;text-decoration:none;
+  transition:color .2s;
+}
+.land-nav-links a:hover{color:#fff}
+.nav-cta-btn{
+  background:var(--accent);color:#000;
+  padding:10px 24px;border-radius:6px;
+  font-size:.85rem;font-weight:700;letter-spacing:.5px;
+  text-transform:uppercase;border:none;cursor:pointer;
+  transition:transform .2s,box-shadow .2s,background .2s;
+  position:relative;overflow:hidden;
+}
+.nav-cta-btn::after{
+  content:'';position:absolute;inset:0;
+  background:rgba(255,255,255,.2);
+  transform:translateX(-100%);transition:transform .3s;
+}
+.nav-cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,241,53,.35)}
+.nav-cta-btn:hover::after{transform:translateX(0)}
+.nav-cta-btn:active{transform:scale(.97)}
+
+/* HERO */
+.hero{
+  position:relative;min-height:100vh;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background:url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1800&q=85') center/cover no-repeat;
+  transform-origin:center;
+  transition:transform .1s linear;
+}
+.hero-overlay{
+  position:absolute;inset:0;z-index:1;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.15) 0%,
+    rgba(0,0,0,.2) 40%,
+    rgba(10,10,10,.9) 80%,
+    rgba(10,10,10,1) 100%
+  );
+}
+.hero-eyebrow{
+  position:absolute;top:50%;left:60px;transform:translateY(-60%);
+  z-index:3;
+  font-size:.75rem;font-weight:700;letter-spacing:6px;
+  text-transform:uppercase;color:var(--accent);
+  opacity:0;animation:fadeUp .8s .3s forwards;
+}
+.hero-title{
+  position:relative;z-index:3;
+  padding:0 60px 20px;
+}
+.hero-title-line{
+  font-family:var(--font-display);
+  font-size:clamp(5rem,12vw,11rem);
+  line-height:.9;letter-spacing:-1px;color:#fff;
+  opacity:0;transform:translateY(40px);
+  animation:fadeUp .7s ease forwards;
+}
+.hero-title-line:nth-child(2){animation-delay:.15s}
+.hero-title-img{
+  position:relative;z-index:3;
+  margin:0 0 0;
+  overflow:hidden;
+  height:clamp(200px,35vw,420px);
+}
+.hero-title-img img{
+  width:100%;height:100%;object-fit:cover;
+  transform:scale(1.05);
+  transition:transform 8s ease;
+}
+.hero-title-img.loaded img{transform:scale(1)}
+.hero-img-text{
+  position:absolute;bottom:24px;left:40px;z-index:5;
+  font-family:var(--font-display);
+  font-size:clamp(3rem,7vw,6rem);
+  line-height:.95;color:#fff;
+  opacity:0;animation:fadeUp .7s .5s forwards;
+}
+.hero-img-caption{
+  position:absolute;bottom:24px;right:40px;z-index:5;
+  max-width:280px;
+  font-size:.8rem;color:rgba(255,255,255,.7);line-height:1.7;
+}
+.hero-img-timer{
+  position:absolute;bottom:24px;right:340px;z-index:5;
+  display:flex;align-items:center;gap:10px;
+  color:rgba(255,255,255,.8);font-size:.8rem;
+}
+.play-btn{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.15);backdrop-filter:blur(8px);
+  border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+}
+.play-btn:hover{background:rgba(255,255,255,.25);transform:scale(1.1)}
+.play-btn svg{width:14px;height:14px;fill:#fff;margin-left:2px}
+
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+/* SCROLL MOTIVATIONAL TOOLTIP */
+.scroll-quote{
+  position:fixed;right:32px;top:50%;transform:translateY(-50%);
+  z-index:150;
+  max-width:220px;
+  background:rgba(10,10,10,.9);
+  border:1px solid rgba(200,241,53,.25);
+  border-radius:8px;padding:16px 18px;
+  backdrop-filter:blur(12px);
+  opacity:0;pointer-events:none;
+  transition:opacity .4s,transform .4s;
+  transform:translateY(-50%) translateX(20px);
+}
+.scroll-quote.show{
+  opacity:1;pointer-events:auto;
+  transform:translateY(-50%) translateX(0);
+}
+.scroll-quote-text{
+  font-size:.82rem;font-style:italic;
+  color:rgba(255,255,255,.85);line-height:1.6;
+}
+.scroll-quote-accent{
+  display:block;width:24px;height:2px;
+  background:var(--accent);margin-bottom:10px;
+}
+
+/* SECTIONS */
+.land-section{
+  padding:100px 60px;
+  opacity:0;transform:translateY(50px);
+  transition:opacity .8s ease,transform .8s ease;
+}
+.land-section.in-view{opacity:1;transform:translateY(0)}
+
+.section-tag{
+  font-size:.7rem;font-weight:700;letter-spacing:5px;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:20px;display:block;
+}
+.section-heading{
+  font-family:var(--font-display);
+  font-size:clamp(3rem,7vw,6rem);
+  line-height:.95;color:#fff;margin-bottom:32px;
+}
+
+/* STATS BAND */
+.stats-band{
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:48px 60px;
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:0;
+}
+.stat-item{
+  padding:0 40px;
+  border-right:1px solid var(--border);
+  opacity:0;transform:translateY(20px);
+  transition:opacity .6s ease,transform .6s ease;
+}
+.stat-item:first-child{padding-left:0}
+.stat-item:last-child{border-right:none}
+.stat-item.in-view{opacity:1;transform:translateY(0)}
+.stat-num{
+  font-family:var(--font-display);
+  font-size:4.5rem;color:var(--accent);line-height:1;
+}
+.stat-desc{font-size:.85rem;color:var(--muted);margin-top:8px;line-height:1.5}
+
+/* TRAININGS GRID */
+.trainings-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:2px;
+  margin:0 0 2px;
+}
+.training-card{
+  position:relative;overflow:hidden;
+  aspect-ratio:3/4;cursor:pointer;
+}
+.training-card img{
+  width:100%;height:100%;object-fit:cover;
+  transition:transform .6s ease;filter:brightness(.6);
+}
+.training-card:hover img{transform:scale(1.08);filter:brightness(.8)}
+.training-card-content{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:32px 28px;
+  background:linear-gradient(to top,rgba(0,0,0,.8) 0%,transparent 100%);
+  transform:translateY(8px);transition:transform .3s;
+}
+.training-card:hover .training-card-content{transform:translateY(0)}
+.training-card-label{
+  font-size:.65rem;letter-spacing:4px;
+  text-transform:uppercase;color:var(--accent);
+  margin-bottom:8px;
+}
+.training-card-title{
+  font-family:var(--font-display);
+  font-size:2.2rem;color:#fff;line-height:1;
+}
+.training-card-arrow{
+  position:absolute;top:24px;right:24px;
+  width:40px;height:40px;border-radius:50%;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .3s,transform .3s;
+  transform:translateX(-8px);
+}
+.training-card:hover .training-card-arrow{opacity:1;transform:translateX(0)}
+.training-card-arrow svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+
+/* CTA SECTION */
+.cta-section{
+  padding:120px 60px;
+  background:linear-gradient(135deg,rgba(200,241,53,.06),rgba(124,58,237,.08));
+  border-top:1px solid var(--border);
+  text-align:center;
+}
+.cta-subtitle{
+  font-size:1rem;color:var(--muted);
+  max-width:480px;margin:0 auto 40px;line-height:1.7;
+}
+
+/* BUTTONS */
+.btn-hero{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--accent);color:#000;
+  padding:16px 40px;border-radius:6px;
+  font-size:.95rem;font-weight:800;
+  letter-spacing:1px;text-transform:uppercase;
+  border:none;cursor:pointer;
+  position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .3s;
+}
+.btn-hero::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.3),transparent);
+  transform:translateX(-100%);
+}
+.btn-hero:hover{
+  transform:translateY(-3px);
+  box-shadow:0 14px 40px rgba(200,241,53,.4);
+}
+.btn-hero:hover::before{
+  animation:shimmer .6s ease forwards;
+}
+.btn-hero:active{transform:scale(.97) translateY(0)}
+@keyframes shimmer{to{transform:translateX(100%)}}
+
+.btn-hero-outline{
+  display:inline-flex;align-items:center;gap:12px;
+  background:transparent;color:#fff;
+  padding:16px 40px;border-radius:6px;
+  font-size:.95rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  border:1px solid rgba(255,255,255,.25);cursor:pointer;
+  transition:all .2s;
+}
+.btn-hero-outline:hover{border-color:#fff;background:rgba(255,255,255,.05)}
+.btn-hero-outline:active{transform:scale(.97)}
+
+.btn-ripple{position:relative;overflow:hidden}
+.ripple-effect{
+  position:absolute;border-radius:50%;
+  background:rgba(0,0,0,.25);
+  transform:scale(0);animation:ripple .5s ease;
+  pointer-events:none;
+}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+
+/* REGISTER MODAL */
+.modal-overlay{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.85);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s;
+}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-box{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  width:100%;max-width:560px;max-height:90vh;overflow-y:auto;
+  padding:40px;
+  transform:translateY(30px) scale(.97);
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.modal-overlay.open .modal-box{transform:translateY(0) scale(1)}
+.modal-close{
+  position:absolute;top:16px;right:20px;
+  background:none;border:none;color:var(--muted);
+  font-size:1.4rem;cursor:pointer;
+  transition:color .2s,transform .2s;
+}
+.modal-close:hover{color:#fff;transform:rotate(90deg)}
+.modal-title{
+  font-family:var(--font-display);
+  font-size:2.4rem;color:#fff;margin-bottom:8px;
+}
+.modal-sub{color:var(--muted);font-size:.85rem;margin-bottom:28px}
+
+/* SUCCESS ANIMATION */
+.success-burst{
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;padding:40px;text-align:center;
+  gap:16px;
+}
+.success-icon{
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(200,241,53,.15);border:2px solid var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.5rem;
+  animation:popIn .5s cubic-bezier(.34,1.56,.64,1) forwards;
+  transform:scale(0);
+}
+@keyframes popIn{to{transform:scale(1)}}
+.success-title{
+  font-family:var(--font-display);font-size:2.5rem;color:var(--accent);
+}
+
+/* TABS */
+.tab-row{display:flex;gap:4px;margin-bottom:24px;background:var(--bg);border-radius:8px;padding:4px}
+.tab-btn{
+  flex:1;padding:10px;border:none;border-radius:6px;
+  background:transparent;color:var(--muted);
+  cursor:pointer;font-size:.85rem;font-weight:600;
+  transition:.2s;
+}
+.tab-btn.active{background:var(--accent2);color:#fff}
+
+/* FORM */
+.form-group{margin-bottom:16px}
+.form-group label{
+  display:block;font-size:.72rem;color:var(--muted);
+  margin-bottom:6px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.form-group input,.form-group select,.form-group textarea{
+  width:100%;padding:12px 14px;
+  background:#0e0e0e;border:1px solid var(--border);
+  border-radius:8px;color:var(--text);font-size:.88rem;
+  transition:.2s;outline:none;font-family:var(--font-body);
+}
+.form-group input:focus,.form-group select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(200,241,53,.1);
+}
+.form-group select option{background:#111}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+.btn,.btn-primary,.btn-secondary,.btn-purple,.btn-danger{
+  width:100%;padding:13px;border:none;border-radius:8px;
+  font-size:.9rem;font-weight:700;cursor:pointer;
+  font-family:var(--font-body);
+  transition:all .2s;letter-spacing:.3px;
+  position:relative;overflow:hidden;
+}
+.btn-primary{
+  background:var(--accent);color:#000;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,241,53,.3)}
+.btn-primary:active{transform:scale(.97)}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-secondary:active{transform:scale(.97)}
+.btn-danger{background:rgba(239,68,68,.15);color:var(--danger);border:1px solid rgba(239,68,68,.3)}
+.btn-purple{background:linear-gradient(135deg,var(--accent2),#9333ea);color:#fff}
+.btn-purple:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.3)}
+.btn-purple:active{transform:scale(.97)}
+.btn-sm{width:auto;padding:8px 16px;font-size:.8rem}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important}
+
+/* ══════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════ */
+.navbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,10,.95);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(20px);
+  padding:0 28px;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand-name{
+  font-family:var(--font-display);
+  font-size:1.6rem;letter-spacing:1px;color:#fff;
+}
+.nav-brand-name span{color:var(--accent)}
+.nav-right{display:flex;align-items:center;gap:16px}
+.nav-user{
+  display:flex;align-items:center;gap:10px;
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:50px;padding:6px 14px 6px 6px;
+}
+.avatar{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:.85rem;color:#000;
+}
+.nav-user-info{line-height:1.2}
+.nav-user-info .uname{font-size:.82rem;font-weight:700}
+.nav-user-info .ugoal{font-size:.68rem;color:var(--accent);text-transform:capitalize}
+.nav-logout{
+  background:none;border:1px solid var(--border);
+  color:var(--muted);padding:6px 14px;border-radius:6px;
+  cursor:pointer;font-size:.8rem;
+  transition:.2s;font-family:var(--font-body);
+}
+.nav-logout:hover{border-color:var(--danger);color:var(--danger)}
+
+.dash-body{display:flex;flex:1}
+.sidebar{
+  width:220px;flex-shrink:0;
+  background:var(--card);border-right:1px solid var(--border);
+  padding:20px 12px;display:flex;flex-direction:column;gap:4px;
+}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:8px;cursor:pointer;
+  transition:.15s;font-size:.85rem;font-weight:500;
+  color:var(--muted);border:none;background:none;
+  width:100%;text-align:left;font-family:var(--font-body);
+}
+.nav-item:hover{background:var(--card2);color:var(--text)}
+.nav-item.active{
+  background:rgba(200,241,53,.1);
+  color:var(--accent);font-weight:700;
+}
+.nav-item .icon{font-size:1.1rem;width:24px;text-align:center}
+.nav-sep{height:1px;background:var(--border);margin:8px 4px}
+
+.main-content{flex:1;overflow-y:auto;padding:28px;background:var(--bg)}
+.section-panel{display:none}
+.section-panel.active{display:block}
+.section-header{margin-bottom:24px}
+.section-header h2{font-family:var(--font-display);font-size:2.5rem;letter-spacing:1px}
+.section-header p{color:var(--muted);font-size:.85rem;margin-top:4px}
+
+/* PROFILE HERO */
+.profile-hero{
+  background:linear-gradient(135deg,rgba(200,241,53,.06),rgba(124,58,237,.1));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:32px;margin-bottom:24px;
+  display:flex;align-items:center;gap:28px;
+  position:relative;overflow:hidden;
+}
+.profile-hero::before{
+  content:'';position:absolute;inset:0;
+  background:url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&q=60') right center/cover no-repeat;
+  opacity:.05;
+}
+.profile-avatar-lg{
+  width:88px;height:88px;border-radius:50%;flex-shrink:0;
+  background:var(--accent);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2.2rem;font-weight:800;color:#000;
+  border:3px solid rgba(200,241,53,.3);
+  box-shadow:0 0 30px rgba(200,241,53,.2);
+  position:relative;z-index:1;
+  font-family:var(--font-display);
+}
+.profile-hero-info{position:relative;z-index:1;flex:1}
+.profile-hero-info h2{
+  font-family:var(--font-display);
+  font-size:2.5rem;margin-bottom:4px;letter-spacing:1px;
+}
+.profile-hero-info .subtitle{color:var(--muted);font-size:.85rem;margin-bottom:12px}
+.profile-hero-badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(200,241,53,.12);color:var(--accent);border:1px solid rgba(200,241,53,.2)}
+.badge-purple{background:rgba(124,58,237,.15);color:#a78bfa;border:1px solid rgba(124,58,237,.2)}
+.badge-amber{background:rgba(245,158,11,.15);color:var(--accent3);border:1px solid rgba(245,158,11,.2)}
+.badge-blue{background:rgba(59,130,246,.15);color:#93c5fd;border:1px solid rgba(59,130,246,.2)}
+.badge-red{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px}
+.card-grid{display:grid;gap:16px}
+.cols-2{grid-template-columns:repeat(2,1fr)}
+.cols-3{grid-template-columns:repeat(3,1fr)}
+.cols-4{grid-template-columns:repeat(4,1fr)}
+
+.stat-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;
+  display:flex;flex-direction:column;gap:8px;
+  transition:.2s;
+}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.stat-label{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+.stat-value{font-family:var(--font-display);font-size:2.5rem;color:var(--text);line-height:1}
+.stat-unit{font-size:.8rem;color:var(--muted);margin-left:4px;font-family:var(--font-body)}
+
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.info-row:last-child{border-bottom:none}
+.info-row .lbl{color:var(--muted)}
+.info-row .val{font-weight:600;text-align:right}
+
+.progress-bar-label{display:flex;justify-content:space-between;font-size:.8rem;margin-bottom:4px}
+.progress-bar-track{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
+
+.ai-output{
+  background:var(--card2);border:1px solid var(--border);
+  border-radius:10px;padding:20px;
+  font-size:.85rem;line-height:1.85;color:#ccc;
+  white-space:pre-wrap;word-wrap:break-word;
+  max-height:600px;overflow-y:auto;
+}
+.data-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.data-table th{background:var(--card2);color:var(--muted);padding:10px 14px;text-align:left;font-weight:600;font-size:.72rem;text-transform:uppercase;letter-spacing:.5px}
+.data-table td{padding:12px 14px;border-bottom:1px solid var(--border)}
+.data-table tr:hover td{background:var(--card2)}
+.data-table tr:last-child td{border-bottom:none}
+
+/* TOAST */
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:8px;padding:12px 16px;font-size:.82rem;
+  min-width:260px;display:flex;align-items:center;gap:10px;
+  animation:slideIn .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:var(--shadow);
+}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast.success{border-left:3px solid var(--accent)}
+.toast.error{border-left:3px solid var(--danger)}
+.toast.info{border-left:3px solid var(--info)}
+
+.loader{display:inline-block;width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-state{text-align:center;padding:40px;color:var(--muted)}
+.loading-state .loader{width:32px;height:32px;margin-bottom:12px}
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty-state .icon{font-size:3rem;margin-bottom:12px}
+.empty-state p{margin-bottom:20px}
+
+.alert{padding:12px 16px;border-radius:8px;font-size:.85rem;margin-bottom:16px}
+.alert-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5}
+.alert-success{background:rgba(200,241,53,.1);border:1px solid rgba(200,241,53,.3);color:var(--accent)}
+.alert-info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#93c5fd}
+
+.goal-pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:capitalize}
+.goal-fat_loss{background:rgba(239,68,68,.15);color:#fca5a5}
+.goal-muscle_gain{background:rgba(200,241,53,.15);color:var(--accent)}
+.goal-weight_gain{background:rgba(245,158,11,.15);color:var(--accent3)}
+.goal-maintenance{background:rgba(59,130,246,.15);color:#93c5fd}
+
+.stat-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:600}
+.badge-normal{background:rgba(200,241,53,.15);color:var(--accent)}
+.badge-over{background:rgba(245,158,11,.15);color:var(--accent3)}
+.badge-obese{background:rgba(239,68,68,.15);color:var(--danger)}
+.badge-under{background:rgba(59,130,246,.15);color:var(--info)}
+.trend-up{color:#ef4444}.trend-down{color:var(--accent)}
+
+.quote-box{
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(200,241,53,.12);
+  border-radius:10px;padding:16px 20px;
+  max-width:100%;
+}
+.quote-text{font-size:.88rem;font-style:italic;color:#bbb;line-height:1.7;min-height:44px;transition:opacity .4s}
+.quote-author{color:var(--accent);font-size:.75rem;margin-top:6px;font-weight:700}
+
+@media(max-width:768px){
+  .land-nav{padding:0 20px}
+  .hero-eyebrow{left:20px}
+  .hero-title{padding:0 20px 20px}
+  .hero-img-text{left:20px}
+  .hero-img-caption,.hero-img-timer{display:none}
+  .land-section{padding:60px 20px}
+  .stats-band{padding:40px 20px;grid-template-columns:repeat(2,1fr);gap:28px}
+  .stat-item{border-right:none;padding:0}
+  .trainings-grid{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .cols-2,.cols-3,.cols-4{grid-template-columns:1fr}
+  .main-content{padding:16px}
+  .form-row{grid-template-columns:1fr}
+  .profile-hero{flex-direction:column;text-align:center}
+  .profile-hero-badges{justify-content:center}
+  .scroll-quote{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LANDING PAGE ══ -->
+<div id="landingPage" class="page active">
+
+  <!-- NAV -->
+  <nav class="land-nav" id="landNav">
+    <a class="land-nav-logo" href="#">GETFITLY<span>LAB</span></a>
+    <div class="land-nav-links">
+      <a href="#about">About</a>
+      <a href="#trainings">Trainings</a>
+      <a href="#testimonials">Testimonials</a>
+      <a href="#contact">Contact</a>
+      <button class="nav-cta-btn btn-ripple" onclick="openModal('login')">JOIN TODAY</button>
+    </div>
+  </nav>
+
+  <!-- SCROLL QUOTE TOOLTIP -->
+  <div class="scroll-quote" id="scrollQuote">
+    <span class="scroll-quote-accent"></span>
+    <div class="scroll-quote-text" id="scrollQuoteText">"The only bad workout is the one that didn't happen."</div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg" id="heroBg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-eyebrow">ACHIEVE YOUR FITNESS GOALS</div>
+    <div class="hero-title">
+      <div class="hero-title-line">FIND YOUR</div>
+      <div class="hero-title-line">STRENGTH</div>
+    </div>
+    <div class="hero-title-img" id="heroImg">
+      <img src="https://images.unsplash.com/photo-1549476464-37392f717541?w=1600&q=85" alt="Fitness" onload="this.closest('.hero-title-img').classList.add('loaded')"/>
+      <div class="hero-img-text">INSIDE<br>AND OUT.</div>
+      <div class="hero-img-caption">We are dedicated to helping you achieve your fitness goals and improve your overall health and well-being.</div>
+      <div class="hero-img-timer">
+        <span>3 min</span>
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS BAND -->
+  <div class="stats-band" id="statsBand">
+    <div class="stat-item">
+      <div class="stat-num">12K+</div>
+      <div class="stat-desc">Members transformed<br>their lives with us</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">98%</div>
+      <div class="stat-desc">Success rate in<br>achieving fitness goals</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">50+</div>
+      <div class="stat-desc">Workout programs<br>AI-personalized</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">24/7</div>
+      <div class="stat-desc">AI coach available<br>whenever you need</div>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section class="land-section" id="about">
+    <span class="section-tag">About GetFitlyLab</span>
+    <div class="section-heading">YOUR BODY,<br>YOUR RULES.</div>
+    <div style="max-width:640px;color:var(--muted);line-height:1.9;font-size:.95rem">
+      GetFitlyLab is a next-generation AI fitness platform that builds hyper-personalized workout and diet plans around your lifestyle, budget, and goals — not the other way around. We believe fitness isn't a one-size-fits-all prescription. It's a personal journey, and we're your AI co-pilot for it.
+    </div>
+    <div style="margin-top:40px;display:flex;gap:16px;flex-wrap:wrap">
+      <button class="btn-hero btn-ripple" onclick="openModal('register')">
+        START FREE TODAY
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <button class="btn-hero-outline btn-ripple" onclick="openModal('login')">Sign In</button>
+    </div>
+  </section>
+
+  <!-- TRAININGS -->
+  <section id="trainings">
+    <div style="padding:60px 60px 32px;opacity:0;transform:translateY(30px);transition:opacity .7s,transform .7s" class="land-section-title">
+      <span class="section-tag">Training Programs</span>
+      <div class="section-heading">BUILD THE<br>BODY YOU WANT.</div>
+    </div>
+    <div class="trainings-grid">
+      <div class="training-card" onclick="openModal('register')">
+        <img src="https://images.unsplash.com/photo-1526506118085-60ce8714f8c5?w=800&q=80" alt="Strength"/>
+        <div class="training-card-content">
+          <div class="training-card-label">Program 01</div>
+          <div class="training-card-title">STRENGTH<br>TRAINING</div>
+        </div>
+        <div class="training-card-arrow">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+      <div class="training-card" onclick="openModal('register')">
+        <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80" alt="Cardio"/>
+        <div class="training-card-content">
+          <div class="training-card-label">Program 02</div>
+          <div class="training-card-title">FAT LOSS<br>CARDIO</div>
+        </div>
+        <div class="training-card-arrow">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+      <div class="training-card" onclick="openModal('register')">
+        <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=800&q=80" alt="Nutrition"/>
+        <div class="training-card-content">
+          <div class="training-card-label">Program 03</div>
+          <div class="training-card-title">NUTRITION<br>MASTERY</div>
+        </div>
+        <div class="training-card-arrow">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="land-section" id="testimonials">
+    <span class="section-tag">Success Stories</span>
+    <div class="section-heading">REAL PEOPLE,<br>REAL RESULTS.</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px" class="testi-grid">
+      <div class="card" style="border-color:rgba(200,241,53,.15)">
+        <div style="color:var(--accent);font-size:1.2rem;margin-bottom:12px">★★★★★</div>
+        <div style="font-size:.88rem;color:#ccc;line-height:1.8;margin-bottom:16px">"Lost 12 kg in 3 months with a plan that actually fit my ₹4000 budget. The AI diet plan was spot on."</div>
+        <div style="font-weight:700;font-size:.85rem">Arjun M.</div>
+        <div style="font-size:.75rem;color:var(--muted)">Mumbai · Fat Loss Goal</div>
+      </div>
+      <div class="card">
+        <div style="color:var(--accent);font-size:1.2rem;margin-bottom:12px">★★★★★</div>
+        <div style="font-size:.88rem;color:#ccc;line-height:1.8;margin-bottom:16px">"Finally a fitness app that understands a vegetarian Indian diet. The reminders kept me consistent."</div>
+        <div style="font-weight:700;font-size:.85rem">Priya S.</div>
+        <div style="font-size:.75rem;color:var(--muted)">Bangalore · Muscle Gain</div>
+      </div>
+      <div class="card">
+        <div style="color:var(--accent);font-size:1.2rem;margin-bottom:12px">★★★★★</div>
+        <div style="font-size:.88rem;color:#ccc;line-height:1.8;margin-bottom:16px">"The health analysis gave me insights I never got from a gym trainer. Highly recommend to everyone."</div>
+        <div style="font-weight:700;font-size:.85rem">Karthik R.</div>
+        <div style="font-size:.75rem;color:var(--muted)">Chennai · Maintenance</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA SECTION -->
+  <div class="cta-section" id="contact">
+    <span class="section-tag" style="display:block;margin-bottom:16px">Ready?</span>
+    <div class="section-heading" style="font-size:clamp(3rem,8vw,7rem)">START TODAY.</div>
+    <div class="cta-subtitle">Join 12,000+ people who transformed their bodies with GetFitlyLab's AI-powered coaching.</div>
+    <button class="btn-hero btn-ripple" style="font-size:1rem;padding:18px 48px" onclick="openModal('register')">
+      CREATE FREE ACCOUNT
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </button>
+  </div>
+
+  <!-- FOOTER -->
+  <footer style="padding:40px 60px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div class="land-nav-logo" style="font-size:1.6rem">GETFITLY<span style="color:var(--accent)">LAB</span></div>
+    <div style="font-size:.78rem;color:var(--muted)">© 2025 GetFitlyLab. All rights reserved.</div>
+  </footer>
+</div>
+
+<!-- ══ AUTH MODAL ══ -->
+<div class="modal-overlay" id="authModal">
+  <div class="modal-box" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modalContent">
+      <!-- injected by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD PAGE ══ -->
+<div id="dashPage" class="page">
+  <nav class="navbar">
+    <div class="nav-brand">
+      <div class="nav-brand-name">GETFITLY<span>LAB</span></div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-user">
+        <div class="avatar" id="navAvatar">U</div>
+        <div class="nav-user-info">
+          <div class="uname" id="navName">User</div>
+          <div class="ugoal" id="navGoal">—</div>
+        </div>
+      </div>
+      <button class="nav-logout" onclick="logout()">Logout</button>
+    </div>
+  </nav>
+  <div class="dash-body">
+    <aside class="sidebar">
+      <button class="nav-item active" onclick="showSection('overview')" id="nav-overview"><span class="icon">🏠</span> Overview</button>
+      <button class="nav-item" onclick="showSection('profile')" id="nav-profile"><span class="icon">👤</span> My Profile</button>
+      <div class="nav-sep"></div>
+      <button class="nav-item" onclick="showSection('health')" id="nav-health"><span class="icon">❤️</span> Health</button>
+      <button class="nav-item" onclick="showSection('workout')" id="nav-workout"><span class="icon">🏋️</span> Workout Plan</button>
+      <button class="nav-item" onclick="showSection('diet')" id="nav-diet"><span class="icon">🥗</span> Diet Plan</button>
+      <button class="nav-item" onclick="showSection('progress')" id="nav-progress"><span class="icon">📊</span> Progress</button>
+      <button class="nav-item" onclick="showSection('reminders')" id="nav-reminders"><span class="icon">🔔</span> Reminders</button>
+    </aside>
+    <main class="main-content">
+
+      <!-- OVERVIEW -->
+      <div class="section-panel active" id="panel-overview">
+        <div class="section-header">
+          <h2 id="overviewGreeting">GOOD MORNING! 💪</h2>
+          <p id="overviewSub">Here's your fitness summary</p>
+        </div>
+        <div class="quote-box" style="margin-bottom:24px">
+          <div class="quote-text" id="dashQuoteText"></div>
+          <div class="quote-author" id="dashQuoteAuthor"></div>
+        </div>
+        <div class="card-grid cols-4" style="margin-bottom:20px">
+          <div class="stat-card"><div class="stat-label">Current Weight</div><div class="stat-value" id="ovWeight">—<span class="stat-unit">kg</span></div></div>
+          <div class="stat-card"><div class="stat-label">BMI</div><div class="stat-value" id="ovBMI">—</div><span id="ovBMIBadge"></span></div>
+          <div class="stat-card"><div class="stat-label">Daily Calories</div><div class="stat-value" id="ovCalories">—<span class="stat-unit">kcal</span></div></div>
+          <div class="stat-card"><div class="stat-label">Fitness Goal</div><div class="stat-value" style="font-size:1.1rem;font-family:var(--font-body)" id="ovGoal">—</div></div>
+        </div>
+        <div class="card-grid cols-3">
+          <div class="card" style="text-align:center;cursor:pointer" onclick="showSection('health')">
+            <div style="font-size:2rem">❤️</div>
+            <div style="font-weight:700;margin-top:8px;font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px">HEALTH</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:4px">BMI, BMR, TDEE, Macros</div>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="showSection('workout')">
+            <div style="font-size:2rem">🏋️</div>
+            <div style="font-weight:700;margin-top:8px;font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px">WORKOUT</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:4px">AI-powered 7-day plan</div>
+          </div>
+          <div class="card" style="text-align:center;cursor:pointer" onclick="showSection('diet')">
+            <div style="font-size:2rem">🥗</div>
+            <div style="font-weight:700;margin-top:8px;font-family:var(--font-display);font-size:1.4rem;letter-spacing:1px">DIET</div>
+            <div style="font-size:.78rem;color:var(--muted);margin-top:4px">Budget-aware meal plan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE -->
+      <div class="section-panel" id="panel-profile">
+        <div class="section-header"><h2>MY PROFILE</h2><p>Your complete fitness profile</p></div>
+        <div id="profileContent"></div>
+      </div>
+
+      <!-- HEALTH -->
+      <div class="section-panel" id="panel-health">
+        <div class="section-header"><h2>HEALTH ANALYSIS</h2><p>Your body metrics — BMI, BMR, TDEE and macro targets</p></div>
+        <div id="healthContent">
+          <div class="empty-state"><div class="icon">🔬</div><p>No health analysis yet. Click below to calculate.</p><button class="btn btn-primary btn-sm" onclick="runHealthAnalysis()">Run Health Analysis</button></div>
+        </div>
+      </div>
+
+      <!-- WORKOUT -->
+      <div class="section-panel" id="panel-workout">
+        <div class="section-header"><h2>WORKOUT PLAN</h2><p>AI-generated personalised weekly workout schedule</p></div>
+        <div id="workoutContent">
+          <div class="empty-state"><div class="icon">💪</div><p>No workout plan yet. Generate one with AI.</p><button class="btn btn-purple btn-sm" onclick="generateWorkout()">Generate Workout Plan 🤖</button></div>
+        </div>
+      </div>
+
+      <!-- DIET -->
+      <div class="section-panel" id="panel-diet">
+        <div class="section-header"><h2>DIET PLAN</h2><p>AI-generated personalised meal plan with grocery list</p></div>
+        <div id="dietContent">
+          <div class="empty-state"><div class="icon">🍽️</div><p>No diet plan yet. Generate one with AI.</p><button class="btn btn-purple btn-sm" onclick="generateDiet()">Generate Diet Plan 🤖</button></div>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="section-panel" id="panel-progress">
+        <div class="section-header"><h2>PROGRESS TRACKER</h2><p>Log and track your fitness journey</p></div>
+        <div class="card" style="margin-bottom:20px">
+          <h3 style="margin-bottom:16px;font-size:.95rem;font-weight:700">Log Today's Progress</h3>
+          <div class="form-row">
+            <div class="form-group"><label>Weight (kg) *</label><input type="number" id="pgWeight" step="0.1" placeholder="75.0"/></div>
+            <div class="form-group"><label>Chest (cm)</label><input type="number" id="pgChest" step="0.1" placeholder="Optional"/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Waist (cm)</label><input type="number" id="pgWaist" step="0.1" placeholder="Optional"/></div>
+            <div class="form-group"><label>Hips (cm)</label><input type="number" id="pgHips" step="0.1" placeholder="Optional"/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Arms (cm)</label><input type="number" id="pgArms" step="0.1" placeholder="Optional"/></div>
+            <div class="form-group"><label>Notes</label><input type="text" id="pgNotes" placeholder="Feeling strong today!"/></div>
+          </div>
+          <button class="btn btn-primary btn-sm btn-ripple" onclick="logProgress()">Save Entry</button>
+        </div>
+        <div id="progressReport"></div>
+        <div id="progressHistory"></div>
+      </div>
+
+      <!-- REMINDERS -->
+      <div class="section-panel" id="panel-reminders">
+        <div class="section-header"><h2>REMINDERS</h2><p>Automated SMS & Email notifications for meals, workouts and water</p></div>
+        <div class="card" style="margin-bottom:20px;border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.04)">
+          <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
+            <div style="font-size:2rem">⚙️</div>
+            <div style="flex:1">
+              <div style="font-weight:700;margin-bottom:6px">Setup Required in <code style="background:var(--card2);padding:2px 8px;border-radius:6px;font-size:.85rem">.env</code> file</div>
+              <div style="font-size:.82rem;color:var(--muted);line-height:1.8">
+                <strong style="color:#f59e0b">Email (Gmail):</strong> Add <code style="background:var(--card2);padding:1px 6px;border-radius:4px">GMAIL_ADDRESS</code> and <code style="background:var(--card2);padding:1px 6px;border-radius:4px">GMAIL_APP_PASSWORD</code><br>
+                <strong style="color:#f59e0b">SMS (Twilio):</strong> Add <code style="background:var(--card2);padding:1px 6px;border-radius:4px">TWILIO_ACCOUNT_SID</code>, <code style="background:var(--card2);padding:1px 6px;border-radius:4px">TWILIO_AUTH_TOKEN</code>, <code style="background:var(--card2);padding:1px 6px;border-radius:4px">TWILIO_FROM_NUMBER</code>
+              </div>
+              <div style="margin-top:10px">
+                <button class="btn btn-secondary btn-sm" onclick="sendTestNotification()" id="testNotifBtn">📨 Send Test Email + SMS</button>
+              </div>
+            </div>
+          </div>
+          <div id="testNotifResult" style="margin-top:12px"></div>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div style="font-weight:700;margin-bottom:16px">➕ Add New Reminder</div>
+          <div class="form-row">
+            <div class="form-group"><label>Type</label>
+              <select id="rmType"><option value="meal">🍽️ Meal</option><option value="workout">🏋️ Workout</option><option value="water">💧 Water</option><option value="custom">⚡ Custom</option></select>
+            </div>
+            <div class="form-group"><label>Time (24hr)</label><input type="time" id="rmTime" value="08:00"/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Title</label><input type="text" id="rmTitle" placeholder="e.g. Breakfast Time"/></div>
+            <div class="form-group"><label>Days</label>
+              <select id="rmDays"><option value="all">Every Day</option><option value="mon,tue,wed,thu,fri">Weekdays Only</option><option value="sat,sun">Weekends Only</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Message</label><input type="text" id="rmMessage" placeholder="e.g. Time to eat your breakfast! 🍳"/></div>
+          <button class="btn btn-primary btn-sm btn-ripple" onclick="addReminder()">Add Reminder</button>
+        </div>
+        <div class="card" style="margin-bottom:20px">
+          <div style="font-weight:700;margin-bottom:12px">⚡ Quick Add Templates</div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn btn-secondary btn-sm" onclick="quickAdd('meal','Breakfast','07:30','Time to eat breakfast! Start your day strong.')">🍳 Breakfast 7:30am</button>
+            <button class="btn btn-secondary btn-sm" onclick="quickAdd('meal','Lunch','13:00','Lunch time! Fuel up for the afternoon.')">🍱 Lunch 1pm</button>
+            <button class="btn btn-secondary btn-sm" onclick="quickAdd('meal','Dinner','20:00','Dinner time! Keep it light and nutritious.')">🥗 Dinner 8pm</button>
+            <button class="btn btn-secondary btn-sm" onclick="quickAdd('workout','Workout Time!','06:00','Time to exercise! Your body will thank you later.')">💪 Workout 6am</button>
+            <button class="btn btn-secondary btn-sm" onclick="quickAdd('water','Drink Water','09:00','Stay hydrated! Drink a glass of water now.')">💧 Water 9am</button>
+            <button class="btn btn-secondary btn-sm" onclick="quickAdd('water','Drink Water','15:00','Afternoon hydration check! Drink water now.')">💧 Water 3pm</button>
+          </div>
+        </div>
+        <div id="remindersList"><div class="loading-state"><div class="loader"></div><p>Loading reminders...</p></div></div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const API = 'http://localhost:8000';
+let currentUser = null;
+let healthProfile = null;
+
+const quotes = [
+  {text:"The only bad workout is the one that didn't happen.",author:"— Unknown"},
+  {text:"Take care of your body. It's the only place you have to live.",author:"— Jim Rohn"},
+  {text:"Strength does not come from physical capacity. It comes from an indomitable will.",author:"— Mahatma Gandhi"},
+  {text:"The pain you feel today will be the strength you feel tomorrow.",author:"— Arnold Schwarzenegger"},
+  {text:"Your body can stand almost anything. It's your mind that you have to convince.",author:"— Unknown"},
+  {text:"Fitness is not about being better than someone else. It's about being better than you used to be.",author:"— Unknown"},
+  {text:"What seems impossible today will one day become your warm-up.",author:"— Unknown"},
+  {text:"Don't stop when you're tired. Stop when you're done.",author:"— Unknown"},
+  {text:"A year from now you'll wish you had started today.",author:"— Karen Lamb"},
+  {text:"Train insane or remain the same.",author:"— Unknown"},
+  {text:"Your health is an investment, not an expense.",author:"— Unknown"},
+  {text:"No matter how slow you go, you're still lapping everybody on the couch.",author:"— Unknown"},
+  {text:"The clock is ticking. Are you becoming the person you want to be?",author:"— Greg Plitt"},
+];
+let quoteIdx = 0;
+
+// ── RIPPLE EFFECT ──
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.btn-ripple');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const r = document.createElement('span');
+  r.className = 'ripple-effect';
+  const size = Math.max(rect.width, rect.height);
+  r.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px`;
+  btn.appendChild(r);
+  setTimeout(() => r.remove(), 600);
+});
+
+// ── SCROLL ANIMATIONS ──
+const scrollQuoteEl = document.getElementById('scrollQuote');
+const scrollQuoteText = document.getElementById('scrollQuoteText');
+let lastScrollY = 0;
+let quoteTimeout = null;
+let quoteShownAt = 0;
+
+window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+
+  // Parallax hero
+  const heroBg = document.getElementById('heroBg');
+  if(heroBg) heroBg.style.transform = `translateY(${y * 0.35}px)`;
+
+  // Navbar scroll style
+  const nav = document.getElementById('landNav');
+  if(nav) nav.classList.toggle('scrolled', y > 60);
+
+  // Scroll quote tooltip — show on downward scroll past 300px
+  if(y > 300 && y > lastScrollY && Date.now() - quoteShownAt > 6000) {
+    const q = quotes[Math.floor(Math.random() * quotes.length)];
+    scrollQuoteText.textContent = `"${q.text}"`;
+    scrollQuoteEl.classList.add('show');
+    quoteShownAt = Date.now();
+    clearTimeout(quoteTimeout);
+    quoteTimeout = setTimeout(() => scrollQuoteEl.classList.remove('show'), 4000);
+  }
+  lastScrollY = y;
+
+  // Intersection-like reveal for stat items
+  const statItems = document.querySelectorAll('.stat-item');
+  statItems.forEach((el, i) => {
+    const rect = el.getBoundingClientRect();
+    if(rect.top < window.innerHeight - 60) {
+      setTimeout(() => el.classList.add('in-view'), i * 100);
+    }
+  });
+});
+
+// IntersectionObserver for sections
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting) { e.target.classList.add('in-view'); }
+  });
+}, {threshold: 0.12});
+
+document.querySelectorAll('.land-section, .land-section-title').forEach(el => io.observe(el));
+
+// ── MODAL ──
+function openModal(tab) {
+  const overlay = document.getElementById('authModal');
+  renderModalContent(tab);
+  overlay.classList.add('open');
+}
+function closeModal() {
+  document.getElementById('authModal').classList.remove('open');
+}
+document.getElementById('authModal').addEventListener('click', e => {
+  if(e.target === e.currentTarget) closeModal();
+});
+
+function renderModalContent(tab) {
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `
+    <div class="modal-title">${tab === 'register' ? 'JOIN THE LAB' : 'WELCOME BACK'}</div>
+    <div class="modal-sub">${tab === 'register' ? 'Create your free AI fitness account' : 'Sign in to your account'}</div>
+    <div class="tab-row">
+      <button class="tab-btn ${tab==='login'?'active':''}" onclick="renderModalContent('login')">Sign In</button>
+      <button class="tab-btn ${tab==='register'?'active':''}" onclick="renderModalContent('register')">Register</button>
+    </div>
+    ${tab === 'login' ? loginFormHTML() : registerFormHTML()}
+  `;
+}
+
+function loginFormHTML() {
+  return `
+    <div id="loginAlert"></div>
+    <div class="form-group"><label>Email Address</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"/></div>
+    <button class="btn btn-primary btn-ripple" id="loginBtn" onclick="doLogin()"><span id="loginBtnText">Sign In</span></button>
+    <p style="text-align:center;margin-top:14px;font-size:.8rem;color:var(--muted)">New here? <a href="#" onclick="renderModalContent('register')" style="color:var(--accent)">Create account</a></p>
+  `;
+}
+
+function registerFormHTML() {
+  return `
+    <div id="registerAlert"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Full Name *</label><input type="text" id="regName" placeholder="Your Name"/></div>
+      <div class="form-group"><label>Age *</label><input type="number" id="regAge" placeholder="22" min="5" max="120"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Gender</label><select id="regGender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+      <div class="form-group"><label>Phone (optional)</label><input type="text" id="regPhone" placeholder="+919876543210"/></div>
+    </div>
+    <div class="form-group"><label>Email Address *</label><input type="email" id="regEmail" placeholder="your@email.com"/></div>
+    <div class="form-row">
+      <div class="form-group"><label>Password *</label><input type="password" id="regPassword" placeholder="Min 6 characters"/></div>
+      <div class="form-group"><label>Confirm Password *</label><input type="password" id="regPasswordConfirm" placeholder="Repeat password"/></div>
+    </div>
+    <div class="form-group"><label>Address</label><input type="text" id="regAddress" placeholder="City, State"/></div>
+    <div class="form-row">
+      <div class="form-group"><label>Height (cm) *</label><input type="number" id="regHeight" placeholder="170" step="0.1"/></div>
+      <div class="form-group"><label>Weight (kg) *</label><input type="number" id="regWeight" placeholder="70" step="0.1"/></div>
+    </div>
+    <div class="form-group"><label>Occupation</label><input type="text" id="regOccupation" placeholder="Software Engineer"/></div>
+    <div class="form-row">
+      <div class="form-group"><label>Work Schedule</label><input type="text" id="regWork" placeholder="9am–6pm weekdays"/></div>
+      <div class="form-group"><label>Sleep Schedule</label><input type="text" id="regSleep" placeholder="11pm–7am"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Food Preference</label><select id="regFood"><option value="non_veg">Non-Veg</option><option value="veg">Veg</option><option value="vegan">Vegan</option><option value="eggetarian">Eggetarian</option></select></div>
+      <div class="form-group"><label>Monthly Budget (₹) *</label><input type="number" id="regBudget" placeholder="5000" min="500"/></div>
+    </div>
+    <div class="form-group"><label>Fitness Goal</label><select id="regGoal"><option value="fat_loss">Fat Loss</option><option value="muscle_gain">Muscle Gain</option><option value="weight_gain">Weight Gain</option><option value="maintenance">Maintenance</option></select></div>
+    <button class="btn btn-primary btn-ripple" id="regBtn" onclick="doRegister()"><span id="regBtnText">CREATE ACCOUNT</span></button>
+  `;
+}
+
+// ── AUTH ──
+async function apiFetch(method, path, body=null){
+  const opts={method, headers:{'Content-Type':'application/json'}};
+  if(body) opts.body=JSON.stringify(body);
+  const res = await fetch(API+path, opts);
+  const data = await res.json();
+  if(!res.ok){
+    const detail = data.detail;
+    let msg = 'Request failed';
+    if(typeof detail === 'string') msg = detail;
+    else if(Array.isArray(detail)) msg = detail.map(d => d.msg || JSON.stringify(d)).join(', ');
+    else if(detail) msg = JSON.stringify(detail);
+    throw new Error(msg);
+  }
+  return data;
+}
+
+async function doLogin(){
+  const email = document.getElementById('loginEmail')?.value.trim();
+  const password = document.getElementById('loginPassword')?.value;
+  const alertEl = document.getElementById('loginAlert');
+  const btnText = document.getElementById('loginBtnText');
+  const btn = document.getElementById('loginBtn');
+  if(!alertEl) return;
+  alertEl.innerHTML='';
+  if(!email){ alertEl.innerHTML='<div class="alert alert-error">Please enter your email.</div>'; return; }
+  if(!password){ alertEl.innerHTML='<div class="alert alert-error">Please enter your password.</div>'; return; }
+  btnText.innerHTML='<span class="loader"></span>';
+  btn.disabled=true;
+  try{
+    const user = await apiFetch('POST', `/users/login`, {email, password});
+    currentUser = user;
+    closeModal();
+    enterDashboard();
+    toast(`Welcome back, ${user.name}! 💪`, 'success');
+  }catch(e){
+    alertEl.innerHTML=`<div class="alert alert-error">${e.message}</div>`;
+    btnText.textContent='Sign In';
+    btn.disabled=false;
+  }
+}
+
+async function doRegister(){
+  const alertEl = document.getElementById('registerAlert');
+  const btnText = document.getElementById('regBtnText');
+  const btn = document.getElementById('regBtn');
+  if(!alertEl) return;
+  alertEl.innerHTML='';
+  const password        = document.getElementById('regPassword')?.value;
+  const passwordConfirm = document.getElementById('regPasswordConfirm')?.value;
+  if(!password || password.length < 6){
+    alertEl.innerHTML='<div class="alert alert-error">Password must be at least 6 characters.</div>'; return;
+  }
+  if(password !== passwordConfirm){
+    alertEl.innerHTML='<div class="alert alert-error">Passwords do not match.</div>'; return;
+  }
+  const body={
+    name: document.getElementById('regName')?.value.trim(),
+    age: parseInt(document.getElementById('regAge')?.value),
+    gender: document.getElementById('regGender')?.value,
+    email: document.getElementById('regEmail')?.value.trim(),
+    password: password,
+    address: document.getElementById('regAddress')?.value.trim()||null,
+    height_cm: parseFloat(document.getElementById('regHeight')?.value),
+    weight_kg: parseFloat(document.getElementById('regWeight')?.value),
+    occupation: document.getElementById('regOccupation')?.value.trim()||null,
+    work_schedule: document.getElementById('regWork')?.value.trim()||null,
+    sleep_schedule: document.getElementById('regSleep')?.value.trim()||null,
+    food_preference: document.getElementById('regFood')?.value,
+    monthly_budget: parseFloat(document.getElementById('regBudget')?.value),
+    fitness_goal: document.getElementById('regGoal')?.value,
+    phone_number: document.getElementById('regPhone')?.value.trim()||null,
+  };
+  if(!body.name||!body.email||isNaN(body.age)||isNaN(body.height_cm)||isNaN(body.weight_kg)||isNaN(body.monthly_budget)){
+    alertEl.innerHTML='<div class="alert alert-error">Please fill all required (*) fields.</div>'; return;
+  }
+  btnText.innerHTML='<span class="loader"></span>';
+  btn.disabled=true;
+  try{
+    const user = await apiFetch('POST','/users/register',body);
+    currentUser = user;
+    // Success animation
+    document.getElementById('modalContent').innerHTML = `
+      <div class="success-burst">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">YOU'RE IN!</div>
+        <p style="color:var(--muted);font-size:.9rem">Welcome to GetFitlyLab, ${user.name}!</p>
+      </div>
+    `;
+    setTimeout(() => { closeModal(); enterDashboard(); }, 1600);
+    toast('Account created! Welcome to GetFitlyLab 🎉','success');
+  }catch(e){
+    alertEl.innerHTML=`<div class="alert alert-error">${e.message}</div>`;
+    btnText.textContent='CREATE ACCOUNT';
+    btn.disabled=false;
+  }
+}
+
+// ── PAGE SWITCH ──
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(name+'Page').classList.add('active');
+}
+
+// ── DASHBOARD ──
+function enterDashboard(){
+  showPage('dash');
+  const u = currentUser;
+  document.getElementById('navAvatar').textContent = u.name[0].toUpperCase();
+  document.getElementById('navName').textContent   = u.name;
+  document.getElementById('navGoal').textContent   = u.fitness_goal.replace(/_/g,' ');
+  const hr = new Date().getHours();
+  const greet = hr<12?'GOOD MORNING':hr<18?'GOOD AFTERNOON':'GOOD EVENING';
+  document.getElementById('overviewGreeting').textContent = `${greet}, ${u.name.toUpperCase()}! 💪`;
+  document.getElementById('overviewSub').textContent = `Goal: ${u.fitness_goal.replace(/_/g,' ')} · ${new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long'})}`;
+  document.getElementById('ovWeight').innerHTML = `${u.weight_kg}<span class="stat-unit">kg</span>`;
+  document.getElementById('ovGoal').innerHTML   = `<span class="goal-pill goal-${u.fitness_goal}">${u.fitness_goal.replace(/_/g,' ')}</span>`;
+  const dq = quotes[Math.floor(Math.random()*quotes.length)];
+  document.getElementById('dashQuoteText').textContent = `"${dq.text}"`;
+  document.getElementById('dashQuoteAuthor').textContent = dq.author;
+  showSection('profile');
+  renderProfilePanel();
+  loadHealthSilent();
+  loadProgressHistory();
+}
+
+function renderProfilePanel(){
+  const u = currentUser;
+  const goalColors={fat_loss:'red',muscle_gain:'green',weight_gain:'amber',maintenance:'blue'};
+  const gc=goalColors[u.fitness_goal]||'green';
+  document.getElementById('profileContent').innerHTML = `
+    <div class="profile-hero">
+      <div class="profile-avatar-lg">${u.name[0].toUpperCase()}</div>
+      <div class="profile-hero-info">
+        <h2>${u.name.toUpperCase()}</h2>
+        <div class="subtitle">${u.email} · Member #${u.id}</div>
+        <div class="profile-hero-badges">
+          <span class="badge badge-${gc}">🎯 ${u.fitness_goal.replace(/_/g,' ')}</span>
+          <span class="badge badge-purple">🍽 ${u.food_preference.replace(/_/g,' ')}</span>
+          <span class="badge badge-blue">📍 ${u.address||'Location not set'}</span>
+          ${u.phone_number?`<span class="badge badge-amber">📱 ${u.phone_number}</span>`:''}
+        </div>
+        <button class="btn btn-secondary btn-sm" style="margin-top:14px;width:auto" onclick="openEditModal()">✏️ Edit Profile</button>
+      </div>
+    </div>
+    <div class="card-grid cols-2" style="margin-bottom:20px">
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:16px;font-size:.9rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase">👤 Personal Details</div>
+        <div class="info-row"><span class="lbl">Full Name</span><span class="val">${u.name}</span></div>
+        <div class="info-row"><span class="lbl">Age</span><span class="val">${u.age} years</span></div>
+        <div class="info-row"><span class="lbl">Gender</span><span class="val" style="text-transform:capitalize">${u.gender}</span></div>
+        <div class="info-row"><span class="lbl">Email</span><span class="val">${u.email}</span></div>
+        <div class="info-row"><span class="lbl">Phone</span><span class="val">${u.phone_number||'—'}</span></div>
+        <div class="info-row"><span class="lbl">Address</span><span class="val">${u.address||'—'}</span></div>
+      </div>
+      <div class="card">
+        <div style="font-weight:700;margin-bottom:16px;font-size:.9rem;color:var(--accent);letter-spacing:1px;text-transform:uppercase">💪 Physical & Lifestyle</div>
+        <div class="info-row"><span class="lbl">Height</span><span class="val">${u.height_cm} cm</span></div>
+        <div class="info-row"><span class="lbl">Current Weight</span><span class="val">${u.weight_kg} kg</span></div>
+        <div class="info-row"><span class="lbl">Occupation</span><span class="val">${u.occupation||'—'}</span></div>
+        <div class="info-row"><span class="lbl">Work Schedule</span><span class="val">${u.work_schedule||'—'}</span></div>
+        <div class="info-row"><span class="lbl">Sleep Schedule</span><span class="val">${u.sleep_schedule||'—'}</span></div>
+        <div class="info-row"><span class="lbl">Monthly Budget</span><span class="val">₹${u.monthly_budget}</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700;margin-bottom:12px">⚖️ Update Current Weight</div>
+      <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+        <div class="form-group" style="margin:0;flex:0 0 200px"><label>New Weight (kg)</label><input type="number" id="newWeight" step="0.1" value="${u.weight_kg}"/></div>
+        <button class="btn btn-secondary btn-sm" onclick="updateWeight()">Update Weight</button>
+      </div>
+    </div>
+  `;
+}
+
+// ── HEALTH ──
+async function loadHealthSilent(){
+  try{ const hp=await apiFetch('GET',`/health/${currentUser.id}`); healthProfile=hp; renderHealthPanel(hp); updateOverviewHealth(hp); }catch(e){}
+}
+async function runHealthAnalysis(){
+  document.getElementById('healthContent').innerHTML='<div class="loading-state"><div class="loader"></div><p>Calculating your metrics...</p></div>';
+  try{
+    const hp=await apiFetch('POST',`/health/${currentUser.id}/analyze`);
+    healthProfile=hp; renderHealthPanel(hp); updateOverviewHealth(hp);
+    toast('Health analysis complete! ✓','success');
+  }catch(e){
+    document.getElementById('healthContent').innerHTML=`<div class="alert alert-error">${e.message}</div><button class="btn btn-primary btn-sm" onclick="runHealthAnalysis()">Retry</button>`;
+  }
+}
+function updateOverviewHealth(hp){
+  document.getElementById('ovBMI').innerHTML=`${hp.bmi}`;
+  const cat=hp.bmi_category;
+  const cls=cat==='Normal'?'badge-normal':cat==='Overweight'?'badge-over':cat==='Obese'?'badge-obese':'badge-under';
+  document.getElementById('ovBMIBadge').innerHTML=`<span class="stat-badge ${cls}">${cat}</span>`;
+  document.getElementById('ovCalories').innerHTML=`${hp.target_calories}<span class="stat-unit">kcal</span>`;
+}
+function renderHealthPanel(hp){
+  const cat=hp.bmi_category;
+  const cls=cat==='Normal'?'badge-normal':cat==='Overweight'?'badge-over':cat==='Obese'?'badge-obese':'badge-under';
+  const maxM=Math.max(hp.protein_g,hp.carbs_g,hp.fat_g);
+  document.getElementById('healthContent').innerHTML=`
+    <div style="display:flex;gap:12px;margin-bottom:16px"><button class="btn btn-secondary btn-sm" onclick="runHealthAnalysis()">🔄 Recalculate</button></div>
+    <div class="card-grid cols-4" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-label">BMI</div><div class="stat-value">${hp.bmi}</div><span class="stat-badge ${cls}">${cat}</span></div>
+      <div class="stat-card"><div class="stat-label">Body Fat %</div><div class="stat-value">${hp.body_fat_percentage}<span class="stat-unit">%</span></div></div>
+      <div class="stat-card"><div class="stat-label">BMR</div><div class="stat-value">${hp.bmr}<span class="stat-unit">kcal</span></div></div>
+      <div class="stat-card"><div class="stat-label">TDEE</div><div class="stat-value">${hp.tdee}<span class="stat-unit">kcal</span></div></div>
+    </div>
+    <div class="card-grid cols-2">
+      <div class="card">
+        <div style="font-weight:600;margin-bottom:16px">📊 Daily Macro Targets</div>
+        ${[['Protein','#f59e0b',hp.protein_g],['Carbohydrates','#3b82f6',hp.carbs_g],['Fats','#ef4444',hp.fat_g]].map(([n,c,v])=>`
+          <div style="margin-bottom:14px">
+            <div class="progress-bar-label"><span style="color:${c}">${n}</span><span>${v}g</span></div>
+            <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${(v/maxM*100).toFixed(0)}%;background:${c}"></div></div>
+          </div>`).join('')}
+        <div style="margin-top:16px;padding:14px;background:rgba(200,241,53,.06);border-radius:10px;border:1px solid rgba(200,241,53,.15)">
+          <div style="font-size:.75rem;color:var(--muted)">Daily Target Calories</div>
+          <div style="font-family:var(--font-display);font-size:2.5rem;color:var(--accent)">${hp.target_calories} <span style="font-size:.85rem;color:var(--muted);font-family:var(--font-body)">kcal</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-weight:600;margin-bottom:16px">🏃 Activity Profile</div>
+        ${[['Activity Level',hp.activity_level?.replace(/_/g,' ')||'—'],['Fitness Level',hp.fitness_level||'—'],['Calculated',new Date(hp.calculated_at).toLocaleDateString('en-IN')]].map(([l,v])=>`
+          <div class="info-row"><span class="lbl">${l}</span><span class="val" style="text-transform:capitalize">${v}</span></div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+// ── WORKOUT ──
+async function generateWorkout(){
+  if(!healthProfile){ toast('Run Health Analysis first!','error'); showSection('health'); return; }
+  document.getElementById('workoutContent').innerHTML='<div class="loading-state"><div class="loader"></div><p>AI is building your workout plan...<br><small style="color:var(--muted)">~10 seconds</small></p></div>';
+  try{
+    const plan=await apiFetch('POST',`/plans/${currentUser.id}/workout`);
+    renderWorkoutPanel(plan); toast('Workout plan generated! 💪','success');
+  }catch(e){
+    document.getElementById('workoutContent').innerHTML=`<div class="alert alert-error">${e.message}</div><button class="btn btn-purple btn-sm" onclick="generateWorkout()">Retry</button>`;
+  }
+}
+async function loadWorkoutPlan(){ try{ const p=await apiFetch('GET',`/plans/${currentUser.id}/workout`); renderWorkoutPanel(p); }catch(e){} }
+function renderWorkoutPanel(plan){
+  const fmt=plan.plan_content.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^#{1,3}\s(.+)/gm,'<div style="font-size:1rem;font-weight:700;color:var(--accent);margin:12px 0 6px">$1</div>').replace(/\n/g,'<br>');
+  document.getElementById('workoutContent').innerHTML=`
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      <span class="goal-pill goal-${currentUser.fitness_goal}">${currentUser.fitness_goal.replace(/_/g,' ')}</span>
+      <span style="color:var(--muted);font-size:.78rem">Generated ${new Date(plan.created_at).toLocaleDateString('en-IN')}</span>
+      <button class="btn btn-purple btn-sm" style="margin-left:auto" onclick="generateWorkout()">🔄 Regenerate</button>
+    </div>
+    <div class="card"><div class="ai-output">${fmt}</div></div>`;
+}
+
+// ── DIET ──
+async function generateDiet(){
+  if(!healthProfile){ toast('Run Health Analysis first!','error'); showSection('health'); return; }
+  document.getElementById('dietContent').innerHTML='<div class="loading-state"><div class="loader"></div><p>AI is building your diet plan...<br><small style="color:var(--muted)">~15 seconds</small></p></div>';
+  try{
+    const plan=await apiFetch('POST',`/plans/${currentUser.id}/diet`);
+    renderDietPanel(plan); toast('Diet plan generated! 🥗','success');
+  }catch(e){
+    document.getElementById('dietContent').innerHTML=`<div class="alert alert-error">${e.message}</div><button class="btn btn-purple btn-sm" onclick="generateDiet()">Retry</button>`;
+  }
+}
+async function loadDietPlan(){ try{ const p=await apiFetch('GET',`/plans/${currentUser.id}/diet`); renderDietPanel(p); }catch(e){} }
+function renderDietPanel(plan){
+  const fmt=plan.plan_content.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/^#{1,3}\s(.+)/gm,'<div style="font-size:1rem;font-weight:700;color:var(--accent);margin:12px 0 6px">$1</div>').replace(/\n/g,'<br>');
+  const gfmt=plan.grocery_list?plan.grocery_list.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>'):null;
+  document.getElementById('dietContent').innerHTML=`
+    <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      ${plan.estimated_cost_inr?`<span class="stat-badge badge-normal">~₹${plan.estimated_cost_inr}/month</span>`:''}
+      <span style="color:var(--muted);font-size:.78rem">Generated ${new Date(plan.created_at).toLocaleDateString('en-IN')}</span>
+      <button class="btn btn-purple btn-sm" style="margin-left:auto" onclick="generateDiet()">🔄 Regenerate</button>
+    </div>
+    <div class="card-grid ${gfmt?'cols-2':''}">
+      <div class="card"><div style="font-weight:600;margin-bottom:12px">🍽️ 7-Day Meal Plan</div><div class="ai-output">${fmt}</div></div>
+      ${gfmt?`<div class="card"><div style="font-weight:600;margin-bottom:12px">🛒 Grocery List</div><div class="ai-output">${gfmt}</div></div>`:''}
+    </div>`;
+}
+
+// ── PROGRESS ──
+async function logProgress(){
+  const w=parseFloat(document.getElementById('pgWeight').value);
+  if(isNaN(w)||w<20||w>500){ toast('Enter a valid weight (20–500 kg)','error'); return; }
+  const body={weight_kg:w,chest_cm:parseFloat(document.getElementById('pgChest').value)||null,waist_cm:parseFloat(document.getElementById('pgWaist').value)||null,hips_cm:parseFloat(document.getElementById('pgHips').value)||null,arms_cm:parseFloat(document.getElementById('pgArms').value)||null,notes:document.getElementById('pgNotes').value||null};
+  try{
+    await apiFetch('POST',`/progress/${currentUser.id}`,body);
+    toast('Progress logged! 📊','success');
+    ['pgWeight','pgChest','pgWaist','pgHips','pgArms','pgNotes'].forEach(id=>document.getElementById(id).value='');
+    loadProgressHistory();
+  }catch(e){ toast(e.message,'error'); }
+}
+async function loadProgressHistory(){
+  try{
+    const data=await apiFetch('GET',`/progress/${currentUser.id}`);
+    renderProgressHistory(data.entries);
+    if(data.total>=2){ const r=await apiFetch('GET',`/progress/${currentUser.id}/report`); renderProgressReport(r); }
+  }catch(e){}
+}
+function renderProgressReport(r){
+  const el=document.getElementById('progressReport');
+  if(!r.all_time){ el.innerHTML=''; return; }
+  const diff=r.all_time.change;
+  const isGood=(currentUser.fitness_goal==='fat_loss'&&diff<0)||(currentUser.fitness_goal!=='fat_loss'&&diff>0);
+  el.innerHTML=`<div class="card" style="margin-bottom:16px">
+    <div style="font-weight:600;margin-bottom:16px">📈 Progress Report</div>
+    <div class="card-grid cols-3">
+      <div class="stat-card"><div class="stat-label">All-Time Change</div><div class="stat-value ${diff<0?'trend-down':'trend-up'}">${diff>0?'+':''}${diff}<span class="stat-unit">kg</span></div></div>
+      ${r.weekly?.change!=null?`<div class="stat-card"><div class="stat-label">This Week</div><div class="stat-value ${r.weekly.change<0?'trend-down':'trend-up'}">${r.weekly.change>0?'+':''}${r.weekly.change}<span class="stat-unit">kg</span></div></div>`:'<div class="stat-card"><div class="stat-label">This Week</div><div class="stat-value">—</div></div>'}
+      <div class="stat-card"><div class="stat-label">Status</div><div style="font-size:.9rem;font-weight:600;margin-top:4px">${isGood?'<span style="color:var(--accent)">✓ On Track</span>':'<span style="color:var(--accent3)">Keep going!</span>'}</div></div>
+    </div>
+  </div>`;
+}
+function renderProgressHistory(entries){
+  const el=document.getElementById('progressHistory');
+  if(!entries||!entries.length){ el.innerHTML='<div class="alert alert-info">No entries yet. Log your first entry above!</div>'; return; }
+  el.innerHTML=`<div class="card"><div style="font-weight:600;margin-bottom:16px">📋 History (${entries.length} entries)</div><div style="overflow-x:auto"><table class="data-table"><thead><tr><th>Date</th><th>Weight</th><th>Chest</th><th>Waist</th><th>Hips</th><th>Arms</th><th>Notes</th></tr></thead><tbody>${entries.map(e=>`<tr><td>${e.entry_date}</td><td><strong>${e.weight_kg} kg</strong></td><td>${e.chest_cm||'—'}</td><td>${e.waist_cm||'—'}</td><td>${e.hips_cm||'—'}</td><td>${e.arms_cm||'—'}</td><td style="color:var(--muted);font-size:.78rem">${e.notes||'—'}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+async function updateWeight(){
+  const w=parseFloat(document.getElementById('newWeight').value);
+  if(isNaN(w)||w<20||w>500){ toast('Enter a valid weight','error'); return; }
+  try{
+    await apiFetch('PUT',`/users/${currentUser.id}/weight?weight_kg=${w}`);
+    currentUser.weight_kg=w;
+    document.getElementById('ovWeight').innerHTML=`${w}<span class="stat-unit">kg</span>`;
+    toast('Weight updated! ✓','success');
+    renderProfilePanel();
+  }catch(e){ toast(e.message,'error'); }
+}
+
+// ── SECTION NAV ──
+function showSection(name){
+  document.querySelectorAll('.section-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+name)?.classList.add('active');
+  document.getElementById('nav-'+name)?.classList.add('active');
+  if(name==='workout') loadWorkoutPlan();
+  if(name==='diet'){ const dc=document.getElementById('dietContent'); if(dc.querySelector('.empty-state')) loadDietPlan(); }
+  if(name==='reminders') loadReminders();
+}
+
+// ── LOGOUT ──
+function logout(){
+  currentUser=null; healthProfile=null;
+  showPage('landing');
+  toast('Logged out. See you soon! 👋','info');
+}
+
+// ── REMINDERS ──
+async function loadReminders(){
+  try{
+    const data=await apiFetch('GET',`/reminders/${currentUser.id}`);
+    renderRemindersList(data.reminders);
+  }catch(e){
+    document.getElementById('remindersList').innerHTML='<div class="alert alert-info">No reminders yet. Add one above!</div>';
+  }
+}
+function renderRemindersList(reminders){
+  const el=document.getElementById('remindersList');
+  if(!reminders||!reminders.length){ el.innerHTML='<div class="alert alert-info">No reminders yet. Add one above or use a Quick Add template!</div>'; return; }
+  const typeIcons={meal:'🍽️',workout:'🏋️',water:'💧',custom:'⚡'};
+  const dayLabels={all:'Every Day','mon,tue,wed,thu,fri':'Weekdays','sat,sun':'Weekends'};
+  el.innerHTML=`<div class="card"><div style="font-weight:700;margin-bottom:16px">📋 Your Reminders (${reminders.length})</div><div style="display:flex;flex-direction:column;gap:10px">${reminders.map(r=>`
+    <div style="display:flex;align-items:center;gap:14px;padding:14px;background:var(--card2);border-radius:10px;border:1px solid ${r.is_active?'rgba(200,241,53,.15)':'var(--border)'}">
+      <div style="font-size:1.6rem;width:36px;text-align:center">${typeIcons[r.reminder_type]||'🔔'}</div>
+      <div style="flex:1">
+        <div style="font-weight:700;font-size:.9rem">${r.title}</div>
+        <div style="font-size:.78rem;color:var(--muted);margin-top:2px">${r.message||''}</div>
+        <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+          <span class="badge badge-${r.is_active?'green':'purple'}" style="font-size:.7rem">${r.is_active?'● Active':'⏸ Paused'}</span>
+          <span class="badge badge-blue" style="font-size:.7rem">🕐 ${r.time_str}</span>
+          <span class="badge badge-amber" style="font-size:.7rem">📅 ${dayLabels[r.days_of_week]||r.days_of_week}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-shrink:0">
+        <button class="btn btn-secondary btn-sm" onclick="toggleReminder(${r.id})">${r.is_active?'⏸ Pause':'▶ Resume'}</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteReminder(${r.id})">🗑</button>
+      </div>
+    </div>`).join('')}</div></div>`;
+}
+async function addReminder(){
+  const type=document.getElementById('rmType').value;
+  const time=document.getElementById('rmTime').value;
+  const title=document.getElementById('rmTitle').value.trim();
+  const days=document.getElementById('rmDays').value;
+  const msg=document.getElementById('rmMessage').value.trim();
+  if(!title){ toast('Please enter a title','error'); return; }
+  if(!time){ toast('Please select a time','error'); return; }
+  try{
+    await apiFetch('POST',`/reminders/${currentUser.id}`,{reminder_type:type,title,message:msg||null,time_str:time,days_of_week:days});
+    toast('Reminder added! 🔔','success');
+    document.getElementById('rmTitle').value='';
+    document.getElementById('rmMessage').value='';
+    loadReminders();
+  }catch(e){ toast(e.message,'error'); }
+}
+async function quickAdd(type,title,time,message){
+  try{
+    await apiFetch('POST',`/reminders/${currentUser.id}`,{reminder_type:type,title,message,time_str:time,days_of_week:'all'});
+    toast(`${title} reminder added! 🔔`,'success');
+    loadReminders();
+  }catch(e){ toast(e.message,'error'); }
+}
+async function toggleReminder(rid){
+  try{ const r=await apiFetch('PUT',`/reminders/${currentUser.id}/${rid}/toggle`); toast(r.message,'success'); loadReminders(); }catch(e){ toast(e.message,'error'); }
+}
+async function deleteReminder(rid){
+  if(!confirm('Delete this reminder?')) return;
+  try{ await apiFetch('DELETE',`/reminders/${currentUser.id}/${rid}`); toast('Reminder deleted','info'); loadReminders(); }catch(e){ toast(e.message,'error'); }
+}
+async function sendTestNotification(){
+  const btn=document.getElementById('testNotifBtn');
+  const res=document.getElementById('testNotifResult');
+  btn.disabled=true;btn.innerHTML='<span class="loader"></span> Sending...';
+  try{
+    const r=await apiFetch('POST',`/reminders/${currentUser.id}/test`);
+    res.innerHTML=`<div class="alert alert-success">📨 ${r.message}</div>`;
+    toast('Test notification sent!','success');
+  }catch(e){ res.innerHTML=`<div class="alert alert-error">${e.message}</div>`; }
+  btn.disabled=false;btn.innerHTML='📨 Send Test Email + SMS';
+}
+
+// ── TOAST ──
+function toast(msg,type='info'){
+  const icons={success:'✓',error:'✗',info:'ℹ'};
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${icons[type]||'•'}</span><span>${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(()=>t.remove(),4000);
+}
+
+// Trigger first stat reveal
+setTimeout(() => {
+  document.querySelectorAll('.stat-item').forEach((el,i) => {
+    setTimeout(() => el.classList.add('in-view'), i * 120);
+  });
+}, 200);
+</script>
+<!-- ══ EDIT PROFILE MODAL ══ -->
+<div id="editProfileModal" style="position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:1000;display:none;align-items:center;justify-content:center;padding:16px">
+  <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;width:100%;max-width:620px;max-height:90vh;overflow-y:auto">
+    <h3 style="margin:0 0 20px;font-size:1.1rem;color:var(--accent);font-weight:700">✏️ Edit Profile</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group" style="margin:0"><label>Full Name</label><input type="text" id="ep_name" placeholder="Your name"/></div>
+      <div class="form-group" style="margin:0"><label>Age</label><input type="number" id="ep_age" min="5" max="120" placeholder="22"/></div>
+      <div class="form-group" style="margin:0"><label>Gender</label><select id="ep_gender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></div>
+      <div class="form-group" style="margin:0"><label>Phone</label><input type="text" id="ep_phone" placeholder="+919876543210"/></div>
+      <div class="form-group" style="margin:0"><label>Address / City</label><input type="text" id="ep_address" placeholder="Chennai"/></div>
+      <div class="form-group" style="margin:0"><label>Height (cm)</label><input type="number" id="ep_height" step="0.1" min="50" max="300" placeholder="170"/></div>
+      <div class="form-group" style="margin:0"><label>Occupation</label><input type="text" id="ep_occupation" placeholder="Engineer"/></div>
+      <div class="form-group" style="margin:0"><label>Work Schedule</label><input type="text" id="ep_work" placeholder="9am-6pm"/></div>
+      <div class="form-group" style="margin:0"><label>Sleep Schedule</label><input type="text" id="ep_sleep" placeholder="11pm-7am"/></div>
+      <div class="form-group" style="margin:0"><label>Monthly Budget (₹)</label><input type="number" id="ep_budget" min="500" placeholder="15000"/></div>
+      <div class="form-group" style="margin:0"><label>Food Preference</label><select id="ep_food"><option value="veg">Veg</option><option value="non_veg">Non Veg</option><option value="vegan">Vegan</option><option value="eggetarian">Eggetarian</option></select></div>
+      <div class="form-group" style="margin:0"><label>Fitness Goal</label><select id="ep_goal"><option value="fat_loss">Fat Loss</option><option value="muscle_gain">Muscle Gain</option><option value="weight_gain">Weight Gain</option><option value="maintenance">Maintenance</option></select></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" onclick="closeEditModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveEditProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openEditModal(){
+  const u = currentUser;
+  document.getElementById('ep_name').value       = u.name || '';
+  document.getElementById('ep_age').value        = u.age || '';
+  document.getElementById('ep_gender').value     = u.gender || 'male';
+  document.getElementById('ep_phone').value      = u.phone_number || '';
+  document.getElementById('ep_address').value    = u.address || '';
+  document.getElementById('ep_height').value     = u.height_cm || '';
+  document.getElementById('ep_occupation').value = u.occupation || '';
+  document.getElementById('ep_work').value       = u.work_schedule || '';
+  document.getElementById('ep_sleep').value      = u.sleep_schedule || '';
+  document.getElementById('ep_budget').value     = u.monthly_budget || '';
+  document.getElementById('ep_food').value       = u.food_preference || 'veg';
+  document.getElementById('ep_goal').value       = u.fitness_goal || 'fat_loss';
+  const modal = document.getElementById('editProfileModal');
+  modal.style.display = 'flex';
+}
+function closeEditModal(){
+  document.getElementById('editProfileModal').style.display = 'none';
+}
+document.getElementById('editProfileModal').addEventListener('click', e => {
+  if(e.target === e.currentTarget) closeEditModal();
+});
+async function saveEditProfile(){
+  const payload = {};
+  const str = (id) => { const v = document.getElementById(id).value.trim(); return v || null; };
+  const num = (id) => { const v = parseFloat(document.getElementById(id).value); return isNaN(v) ? null : v; };
+  const int = (id) => { const v = parseInt(document.getElementById(id).value); return isNaN(v) ? null : v; };
+  if(str('ep_name'))       payload.name            = str('ep_name');
+  if(int('ep_age'))        payload.age             = int('ep_age');
+                           payload.gender          = document.getElementById('ep_gender').value;
+  if(str('ep_phone'))      payload.phone_number    = str('ep_phone');
+  if(str('ep_address'))    payload.address         = str('ep_address');
+  if(num('ep_height'))     payload.height_cm       = num('ep_height');
+  if(str('ep_occupation')) payload.occupation      = str('ep_occupation');
+  if(str('ep_work'))       payload.work_schedule   = str('ep_work');
+  if(str('ep_sleep'))      payload.sleep_schedule  = str('ep_sleep');
+  if(num('ep_budget'))     payload.monthly_budget  = num('ep_budget');
+                           payload.food_preference = document.getElementById('ep_food').value;
+                           payload.fitness_goal    = document.getElementById('ep_goal').value;
+  try{
+    const updated = await apiFetch('PUT', `/users/${currentUser.id}`, payload);
+    currentUser = updated;
+    closeEditModal();
+    renderProfilePanel();
+    toast('Profile updated successfully! ✓', 'success');
+  }catch(e){
+    toast('Update failed: ' + e.message, 'error');
+  }
+}
+</script>
+</body>
+</html>
