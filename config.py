@@ -16,7 +16,10 @@ GROQ_MODEL   = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
 # ── Database ──────────────────────────────────────────────────────────────────
 BASE_DIR    = os.path.dirname(os.path.abspath(__file__))
-DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'data', 'fitness_coach.db')}"
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    f"sqlite:////tmp/fitness_coach.db"
+)
 
 # ── App Settings ──────────────────────────────────────────────────────────────
 APP_NAME    = "AI Fitness Coach"
